@@ -102,7 +102,7 @@ class nessus_parser:
     
     def __init__(self, filename_xml):
         if filename_xml == None or filename_xml == "":
-            print "[!] No filename specified!"
+            print("[!] No filename specified!")
             exit(1)
  
         # Parse input values in order to find valid .nessus files
@@ -118,12 +118,12 @@ class nessus_parser:
                 break
         elif filename_xml.endswith(".nessus"):
             if not exists(filename_xml):
-                print "[!] File specified '%s' not exist!" % filename_xml
+                print("[!] File specified '%s' not exist!" % filename_xml)
                 exit(3)
             self._xml_source.append(filename_xml)
 
         if not self._xml_source:
-            print "[!] No file .nessus to parse was found!"
+            print("[!] No file .nessus to parse was found!")
             exit(3)
 
         # Dictionary to store information
@@ -274,14 +274,14 @@ class nessus_parser:
         if self._results:
             pprint(self._results)
         else:
-            print "[!] No information available."
+            print("[!] No information available.")
 
     def find_by_pluginid(self, pluginid):
         """
         Search information by Nessus Plugin ID
         """
         if len(pluginid) != 5 or not pluginid.isdigit():
-            print "[!] PluginID format error."
+            print("[!] PluginID format error.")
             exit(4)
         
         for host in IPSet(self._results.keys()):
@@ -289,7 +289,7 @@ class nessus_parser:
             for vuln in self._results[host][1:]:
                 
                 if vuln['plugin_id'] == pluginid:
-                    print "%s:%s %s" % (host, vuln['port'], self._results[host][0]['hostname'])
+                    print("%s:%s %s" % (host, vuln['port'], self._results[host][0]['hostname']))
 
     def find_by_plugin_name(self, plugin_descr):
         """
@@ -300,7 +300,7 @@ class nessus_parser:
             host = str(host) # From IPAddress to string
             for vuln in self._results[host][1:]:
                 if vuln['plugin_name'].lower().find(plugin_descr) >= 0:
-                    print "%s:%s [ID %s] %s" % (host, vuln['port'], vuln['plugin_id'], vuln['plugin_name'])
+                    print("%s:%s [ID %s] %s" % (host, vuln['port'], vuln['plugin_id'], vuln['plugin_name']))
 
     def print_statistics(self):
         """
@@ -397,37 +397,37 @@ class nessus_parser:
                     if vuln['plugin_id'] not in targets[host]['exploits_uniq']:
                         targets[host]['exploits_uniq'].append(vuln['plugin_id'])
         
-        print ""
-        print "#" * 8 + "  STATISTICS  " + "#" * 8
-        print ""
-        print "Total targets:\t\t%d" % len(self._results.keys())
-        print "Total vulns:\t\t%d\t[  unique:   %4d  ]" % ((vuln_high + vuln_med + vuln_low + vuln_info), len(vuln_high_uniq) \
-                                                     + len(vuln_med_uniq) + len(vuln_low_uniq) + len(vuln_info_uniq))
-        print "High vulns: \t\t%d\t[  unique: %6d  ]" % (vuln_high, len(vuln_high_uniq))
-        print "Medium vulns\t\t%d\t[  unique: %6d  ]" % (vuln_med, len(vuln_med_uniq))
-        print "Low vulns:\t\t%d\t[  unique: %6d  ]" % (vuln_low, len(vuln_low_uniq))
-        print "Info vulns:\t\t%d\t[  unique: %6d  ]" % (vuln_info, len(vuln_info_uniq))
-        print "Local vulns:\t\t%d\t[  unique: %6d  ]" % (vuln_local, len(vuln_local_uniq))
-        print "Available exploits:\t%d\t[  unique: %6d  ]" % (exploits, len(exploits_uniq))
-        print "Blacklist's size:\t%d\t[  filtered: %4d  ]" % (len(self._blacklist), self._blacklist_hit)
+        print("")
+        print("#" * 8 + "  STATISTICS  " + "#" * 8)
+        print("")
+        print("Total targets:\t\t%d" % len(self._results.keys()))
+        print("Total vulns:\t\t%d\t[  unique:   %4d  ]" % ((vuln_high + vuln_med + vuln_low + vuln_info), len(vuln_high_uniq) \
+                                                     + len(vuln_med_uniq) + len(vuln_low_uniq) + len(vuln_info_uniq)))
+        print("High vulns: \t\t%d\t[  unique: %6d  ]" % (vuln_high, len(vuln_high_uniq)))
+        print("Medium vulns\t\t%d\t[  unique: %6d  ]" % (vuln_med, len(vuln_med_uniq)))
+        print("Low vulns:\t\t%d\t[  unique: %6d  ]" % (vuln_low, len(vuln_low_uniq)))
+        print("Info vulns:\t\t%d\t[  unique: %6d  ]" % (vuln_info, len(vuln_info_uniq)))
+        print("Local vulns:\t\t%d\t[  unique: %6d  ]" % (vuln_local, len(vuln_local_uniq)))
+        print("Available exploits:\t%d\t[  unique: %6d  ]" % (exploits, len(exploits_uniq)))
+        print("Blacklist's size:\t%d\t[  filtered: %4d  ]" % (len(self._blacklist), self._blacklist_hit))
         
-        print ""
-        print "#" * 8 + "    TARGETS   " + "#" * 8
-        print ""
+        print("")
+        print("#" * 8 + "    TARGETS   " + "#" * 8)
+        print("")
         for host in targets.keys():
-            print "[*] %s" % host
+            print("[*] %s" % host)
             total_vulns = targets[host]['vuln_high'] + targets[host]['vuln_med'] + targets[host]['vuln_low'] + targets[host]['vuln_info']
             total_vulns_uniq = len(targets[host]['vuln_high_uniq']) + len(targets[host]['vuln_med_uniq']) + len(targets[host]['vuln_low_uniq']) \
                                                                 + len(targets[host]['vuln_info_uniq'])
-            print "\tTotal vulns: \t\t%d\t[  unique: %6d  ]" % (total_vulns, total_vulns_uniq)
-            print "\t  [+] Local vulns:\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_local'], len(targets[host]['vuln_local_uniq']))
-            print "\t  [+] Remote vulns:\t%d\t[  unique: %6d  ]" % (total_vulns - targets[host]['vuln_local'], \
-                                                                    total_vulns_uniq - len(targets[host]['vuln_local_uniq']))
-            print "\tHigh vulns: \t\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_high'], len(targets[host]['vuln_high_uniq']))
-            print "\tMedium vulns\t\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_med'], len(targets[host]['vuln_med_uniq']))
-            print "\tLow vulns:\t\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_low'], len(targets[host]['vuln_low_uniq']))
-            print "\tInfo vulns:\t\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_info'], len(targets[host]['vuln_info_uniq']))
-            print "\tAvailable exploits:\t%d\t[  unique: %6d  ]" % (targets[host]['exploits'], len(targets[host]['exploits_uniq']))
+            print("\tTotal vulns: \t\t%d\t[  unique: %6d  ]" % (total_vulns, total_vulns_uniq))
+            print("\t  [+] Local vulns:\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_local'], len(targets[host]['vuln_local_uniq'])))
+            print("\t  [+] Remote vulns:\t%d\t[  unique: %6d  ]" % (total_vulns - targets[host]['vuln_local'], \
+                                                                    total_vulns_uniq - len(targets[host]['vuln_local_uniq'])))
+            print("\tHigh vulns: \t\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_high'], len(targets[host]['vuln_high_uniq'])))
+            print("\tMedium vulns\t\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_med'], len(targets[host]['vuln_med_uniq'])))
+            print("\tLow vulns:\t\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_low'], len(targets[host]['vuln_low_uniq'])))
+            print("\tInfo vulns:\t\t%d\t[  unique: %6d  ]" % (targets[host]['vuln_info'], len(targets[host]['vuln_info_uniq'])))
+            print("\tAvailable exploits:\t%d\t[  unique: %6d  ]" % (targets[host]['exploits'], len(targets[host]['exploits_uniq'])))
 
             
     def print_targets(self, fullinfo=False, delim='|'):
@@ -437,16 +437,16 @@ class nessus_parser:
         for host in IPSet(self._results.keys()):
             host = str(host) # From IPAddress to string
             if fullinfo:
-                print "%s%s%s%s%s%s%s%s%s%s%s%s%s" % (host, delim,
+                print("%s%s%s%s%s%s%s%s%s%s%s%s%s" % (host, delim,
                                              self._results[host][0]['hostname'], delim,
                                              self._results[host][0]['netbios_name'], delim,
                                              self._results[host][0]['os'], delim,
                                              self._results[host][0]['scan_start'], delim,
                                              self._results[host][0]['scan_stop'], delim,
                                              self._results[host][0]['mac_address']
-                                             )
+                                             ))
             else:
-                print "%s %s" % (host, self._results[host][0]['hostname'])
+                print("%s %s" % (host, self._results[host][0]['hostname']))
 
     def print_org_format(self, cvss_min='4.0', cvss_max='10.0'):
         """
@@ -454,38 +454,38 @@ class nessus_parser:
         """
         
         # Print reports parsed
-        print "* Nessus files parsed"
+        print("* Nessus files parsed")
         for report in self._xml_source:
-            print "\t%s" % report
+            print("\t%s" % report)
 
         # Print scan's information
-        print "* Parsing info"
-        print "\tResults filtered by: %s" % cvss_min
-        print "\tTotal targets analized: %s" % len(self._results.keys())
+        print("* Parsing info")
+        print("\tResults filtered by: %s" % cvss_min)
+        print("\tTotal targets analized: %s" % len(self._results.keys()))
         
         # Print targets
-        print "* Targets"
+        print("* Targets")
         for host in IPSet(self._results.keys()):
-            print "\t%s" % str(host)
+            print("\t%s" % str(host))
             
-        print "* Results"
+        print("* Results")
         for host in self._results.keys():
-            print "** %s" % host
+            print("** %s" % host)
             # Print specific system's information
-            print "\tScan started at: %s" % self._results[host][0]['scan_start']
-            print "\tScan stopped at: %s" % self._results[host][0]['scan_stop']
+            print("\tScan started at: %s" % self._results[host][0]['scan_start'])
+            print("\tScan stopped at: %s" % self._results[host][0]['scan_stop'])
             hostname = self._results[host][0]['hostname']
             if hostname is not '':
-                print "\tHostname: %s" % hostname
+                print("\tHostname: %s" % hostname)
             netbios = self._results[host][0]['netbios_name']
             if netbios is not '':
-                print "\tNetbios Name: %s" % netbios
+                print("\tNetbios Name: %s" % netbios)
             os = self._results[host][0]['os']
             if os is not '':
-                print "\tOperating System: %s" % os
+                print("\tOperating System: %s" % os)
             mac = self._results[host][0]['mac_address']
             if mac is not '':
-                print "\tMAC: %s" % mac
+                print("\tMAC: %s" % mac)
             
             
             # Sort vulnerabilities by CVSS score
@@ -495,9 +495,9 @@ class nessus_parser:
                     # Apply CVSS filter
                     if float(cvss) >= float(cvss_min) and float(cvss) <= float(cvss_max):
                         # CVSS - Plugin name - Plugin ID
-                        print "*** TODO [CVSS %04s][%s] %s [ID: %s]" % (cvss, vuln['service_name'], vuln['plugin_name'], vuln['plugin_id'])
+                        print("*** TODO [CVSS %04s][%s] %s [ID: %s]" % (cvss, vuln['service_name'], vuln['plugin_name'], vuln['plugin_id']))
                         # Port , Protocol
-                        print "\tPort: %s/%s" % (vuln['port'], vuln['protocol'])
+                        print("\tPort: %s/%s" % (vuln['port'], vuln['protocol']))
 
                         # Service name
                         # service = vuln['service_name']
@@ -511,19 +511,19 @@ class nessus_parser:
                         exploit = vuln['exploit_available']
                         metasploit = vuln['metasploit']
                         if exploit is 'true':
-                            print "\tExploit available!"
+                            print("\tExploit available!")
                         if metasploit is 'true':
-                            print "\tMetasploit module available!"
+                            print("\tMetasploit module available!")
 
                         # CVSS Vector
                         cvss_vector = vuln['cvss_vector']
                         if cvss_vector is not '':
-                            print "\tCVSS Vector %s" % cvss_vector.split("#")[1]
+                            print("\tCVSS Vector %s" % cvss_vector.split("#")[1])
 
                         # CVE
                         cve = vuln['cve']
                         if cve is not '':
-                            print "\tCVE %s" % cve
+                            print("\tCVE %s" % cve)
                             
     def save_csv_report(self, filename, cvss_min='4.0', cvss_max='10.0', only_local=False, delim=','):
         """
@@ -536,7 +536,7 @@ class nessus_parser:
         
         if not filename.endswith('.csv'):
             filename += '.csv'
-        writer = csv.writer(open(filename, 'wb'), delimiter=delim)
+        writer = csv.writer(open(filename, 'w'), delimiter=delim)
         # Print CVS header
         writer.writerow([
             "ID",
@@ -613,18 +613,18 @@ class nessus_parser:
                         info[0] = counter_id
 
         # Print reports parsed
-        print "[*] Information extracted from:"
+        print("[*] Information extracted from:")
         for report in self._xml_source:
-            print "\t[+] %s" % basename(report)
+            print("\t[+] %s" % basename(report))
             
         # Prints total vulns wrote
-        print "[*] CSV delimiter used: \t\t'%s'" % delim
-        print "[*] Total targets parsed: \t\t%d" % len(self._results.keys())
-        print "[*] Min CVSS filter applied: \t\t%.1f" % float(cvss_min)
-        print "[*] Max CVSS filter applied: \t\t%.1f" % float(cvss_max)
-        print "[*] Local vulnerabilities: \t\t%d" % counter_local
-        print "[*] Remote vulnerabilities:\t\t%d" % counter_remote
-        print "[*] Total considered vulnerabilities: \t%d" % counter_vulns
+        print("[*] CSV delimiter used: \t\t'%s'" % delim)
+        print("[*] Total targets parsed: \t\t%d" % len(self._results.keys()))
+        print("[*] Min CVSS filter applied: \t\t%.1f" % float(cvss_min))
+        print("[*] Max CVSS filter applied: \t\t%.1f" % float(cvss_max))
+        print("[*] Local vulnerabilities: \t\t%d" % counter_local)
+        print("[*] Remote vulnerabilities:\t\t%d" % counter_remote)
+        print("[*] Total considered vulnerabilities: \t%d" % counter_vulns)
         
 # Entry point
 if __name__ == "__main__":
@@ -697,8 +697,8 @@ if __name__ == "__main__":
     
     # If not operation required, exit.
     if not args.org and not args.t and not args.raw and not args.p and not args.d and not args.s and not args.csv:
-        print "[!] No operation specified!"
-        print ""
+        print("[!] No operation specified!")
+        print("")
         # Show help
         cmdline.print_help()
         exit(2)
