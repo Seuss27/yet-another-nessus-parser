@@ -536,7 +536,7 @@ class nessus_parser:
         
         if not filename.endswith('.csv'):
             filename += '.csv'
-        writer = csv.writer(open(filename, 'w'), delimiter=delim)
+        writer = csv.writer(open(filename, 'w'), delimiter=delim, lineterminator='\n')
         # Print CVS header
         writer.writerow([
             "ID",
@@ -607,7 +607,8 @@ class nessus_parser:
                         # CVE
                         info.append(vuln['cve'])
 
-                        writer.writerow([item.encode("utf-8") if isinstance(item, basestring) else item for item in info])
+                        # writer.writerow([item.encode("utf-8") if isinstance(item, str) else item for item in info])
+                        writer.writerow([item for item in info])
                         counter_vulns += 1
                         counter_id += 1
                         info[0] = counter_id
