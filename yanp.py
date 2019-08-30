@@ -152,42 +152,36 @@ class nessus_parser:
             # Parse information of selected node
             for item in host.childNodes:        
                 if item.nodeName == 'HostProperties':
-                    item_info = {
-                        'scan_start':   '',
-                        'scan_stop':    '',
-                        'os':           '',
-                        'hostname':     '',
-                        'netbios_name': '',
-                        'mac_address':  '',
-                    }
+                    # Establish a mapping for the preferred headers to the .nessus file values
+                    field_map = {'scan_start': 'HOST_START',
+                                 'scan_stop': 'HOST_END',
+                                 'os': 'operating-system',
+                                 'hostname': 'host-fqdn',
+                                 'netbios_name': 'netbios-name',
+                                 'mac_address': 'mac-address',
+                                 'smb_login_used': 'smb-login-used'}
+
+                    # Create the empty dict
+                    item_info = {}
+                    for k in field_map.keys():
+                        item_info[k] = None
+
                     for properties in item.childNodes:
-                        if properties.attributes is None: continue
+                        if properties.attributes is None:
+                            continue
                         
-                        # Extract generic information
-                        if properties.getAttribute('name') == 'HOST_START':
-                            item_info['scan_start'] = properties.childNodes[0].nodeValue
-                            
-                        if properties.getAttribute('name') == 'HOST_END':
-                            item_info['scan_stop'] = properties.childNodes[0].nodeValue
-                            
-                        if properties.getAttribute('name') == 'operating-system':
-                            item_info['os'] = properties.childNodes[0].nodeValue
-                            
-                        if properties.getAttribute('name') == 'host-fqdn':
-                            item_info['hostname'] = properties.childNodes[0].nodeValue
-                            
-                        if properties.getAttribute('name') == 'netbios-name':
-                            item_info['netbios_name'] = properties.childNodes[0].nodeValue
-                            
-                        if properties.getAttribute('name') == 'mac-address':
-                            item_info['mac_address'] = properties.childNodes[0].nodeValue
-                            
+                        for k, v in field_map.items():
+                            # Extract generic information
+                            if properties.getAttribute('name') == v:
+                                item_info[k] = properties.childNodes[0].nodeValue
+
                     # Add information extracted to data structure
                     self._results[ip].append(item_info)
                                                       
                 # Information extraction
                 if item.nodeName == 'ReportItem':
-                    if item.attributes is None: continue
+                    if item.attributes is None:
+                        continue
                     
                     # Skip specific vulnerability if it is into a blacklist
                     if item.getAttribute('pluginID') in self._blacklist:
@@ -219,7 +213,8 @@ class nessus_parser:
                     vuln['service_name'] = item.getAttribute('svc_name')
 
                     # No another information about vulnerability, continue!
-                    if len(item.childNodes) == 0: continue
+                    if len(item.childNodes) == 0:
+                        continue
                     
                     # Extract detailed vulnerability information
                     for details in item.childNodes:
